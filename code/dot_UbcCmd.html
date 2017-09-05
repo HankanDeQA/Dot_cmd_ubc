@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>UBC&CMD打点测试工具</title>
+    <!--  Bootstrap 核心 CSS 文件 -->
+    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 可选的Bootstrap主题文件（一般不使用） -->
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap-theme.min.css"></script>
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
+    <!--  Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+		body {
+			min-height: 300px;
+			padding-top: 20px;
+			background: #f6f6f6;
+		}
+
+
+
+
+
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <h3 class="text-center text-warning">
+                UBC&CMD打点测试工具
+            </h3>
+            <br>
+            <div style="width:100%; height:1px; background-color:orange;"></div>
+            <br>
+        </div>
+    </div>
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <div class="row clearfix">
+                <div class="col-md-6 column">
+                    <form class="form-inline">
+                        <label>打点类型:</label>
+                        <select class="form-control" id="selectid1">
+                            <option>ubc</option>
+                            <option>cmd</option>
+                        </select>
+                    </form>
+                    <br/>
+                    <form class="form-inline">
+                        <label>打&nbsp;&nbsp;点&nbsp;&nbsp;值:</label>
+                        <select class="form-control" id="selectid2">
+                            <option>464</option>
+                            <option>102</option>
+                            <option>109</option>
+                        </select>
+                    </form>
+                    <br/>
+                    <form class="form-inline">
+                        <label>客&nbsp;&nbsp;户&nbsp;&nbsp;端:</label>
+                        <select class="form-control" id="selectid3">
+                            <option>Android</option>
+                            <option>IOS</option>
+                        </select>
+                        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                        <button id="btnselect" onclick="">确定</button>
+                    </form>
+                    <br/>
+                    <span style="font-weight:bold">标准参考：</span>
+                    <br/>
+                    <textarea rows=20 style="overflow-x:hidden;width:90%;hight:300px">
+						22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+					 </textarea>
+                </div>
+                <div class="col-md-6 column">
+                    <span style="font-weight:bold">JSON：</span>
+                    &nbsp&nbsp&nbsp&nbsp<button id="btnrefresh" onclick="getValue()">刷新</button>
+                    <br/><br/>
+                    <textarea id="revText" name="revText" rows=24 style="overflow-x:hidden;width:90%;hight:300px">
+                    	
+					 </textarea>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+	// var jsonText = "dadadsadasd244422";
+	// document.getElementById('revText').value = jsonText;  //设置textarea的值
+
+
+    function getValue(){
+        var str1 = $("#selectid1 option:selected").val();   //获得选中的值
+        var str2 = $("#selectid2 option:selected").val();  
+        var str = str1+"&"+str2;
+        $.ajax({
+            type:"get",
+            // dataType:"jsonp",
+            // jsonp:"callback",
+            // jsonpCallback:"success_jsonpCallback",
+            // crossDomain:true,
+            
+            url:"http://0.0.0.0:5050/?"+str,
+            
+            success:function(json){
+            	alert(json);
+                var result = JSON.stringify(JSON.parse(json),null,4); 
+                //var jsonresult = objStr.replace(/\n/g, '<br>').replace(/\s/g, '&nbsp');
+                //revText.value=result;
+                $('#revText').val(result);
+
+          //   	var obj = document.getElementById("revText");  
+       			// obj.append('dasdasdas2222222222');   
+				
+				// var jsonText = 'dasdasdas2222222222';
+				// document.getElementById('revText').value = jsonText;
+				// document.getElementById("revText").innerHTML = jsonText;
+
+
+				// document.getElementById('revText').value = 'dasda2222s';  //设置textarea的值
+				// document.write (jsonText); 
+
+				// changeTextArea();
+
+				// var txt;     
+				// txt = document.getElementById('txta').value; //获取textarea的值    
+  		// 		document.write (txt);    
+				// document.getElementById('revText').value = "dsadasdasd";  //设置textarea的值     
+            	
+          	},
+          	error:function(){
+          	  	alert("请求出错！");
+          	}
+        });
+    }
+
+    function changeTextArea(){
+    	document.getElementById('revText').value = 'dasdas';  //设置textarea的值  
+
+        document.getElementByIdx_x("revText").innerText=document.getElementByIdx_x("revText").innerText+"\ninnerText is ok!";
+		document.getElementByIdx_x("revText").innerHTML=document.getElementByIdx_x("revText").innerText+"\ninnerHTML is ok!";
+		document.getElementByIdx_x("revText").value=document.getElementByIdx_x("revText").innerText+"\nvalue is ok!";
+}
+
+
+
+
+
+</script>
+<footer style="padding:20px;text-align:center;color:#999;position:relative;">
+联系邮箱：zhangjie43@baidu.com
+</footer>
+</body>
+</html>
