@@ -10,7 +10,7 @@ $a = str_replace("\n", "", $a);
 $a = "1f8b".substr($a, 4);
 $a = hex2bin($a);
 $json = gzdecode($a);
-file_put_contents('log/ubc/' . time() . '.json', $json);
+//file_put_contents('log/ubc/' . time() . '.json', $json);
 
 /*
  * 解析ubc格式的json字符串，解析出id，并保存数据至json文件
@@ -45,7 +45,13 @@ for ($i = 0; $i < $count_json; $i++)
     // 转化为json_str
     $obj_item_str = json_encode($obj_item);
     echo $obj_item_str;
-    file_put_contents('log_ubc/ubc_' . $id . '.json', $obj_item_str, FILE_APPEND);
+
+//    // 从文件中读取数据到PHP变量
+//    $json_orgin_string = file_get_contents('json/ubc_' . $id . '.json');
+//    // 把JSON字符串转成PHP数组
+//    $data = json_decode($json_string, true);
+
+    file_put_contents('json/ubc_' . $id . '.json', $obj_item_str, FILE_APPEND);
 }
 
 

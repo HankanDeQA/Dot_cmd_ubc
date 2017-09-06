@@ -1,12 +1,14 @@
 #!/usr/bin/python
 # encoding=utf-8
 
+
 import web
 import json
 import urllib
 
 urls = (
-    '/.*', 'hello'
+    '/', 'hello',
+    '/favicon.ico', 'icon'
 )
 app = web.application(urls, globals())
 
@@ -25,20 +27,39 @@ class hello:
         print revInput
         print type(revInput)
 
-        # print revInput.split('&')
+        revType = revInput['type']
+        revId = revInput['id']
+        print revType
+        print type(revId)
+        print revId
 
-        with open("json/demo.json", 'r') as load_f:
-            load_dict = json.load(load_f)
-            resultStr = json.dumps(load_dict)
-            print resultStr #将dict转成str
+        if not revType:
+            print "type is null"
+            return "type is null"
+        elif not revId:
+            print "id is null"
+            return "id is null"
+        else:
+            # 将要打开的文件名
+            openName = "json/" + revType.encode('utf-8') + "_" + revId.encode('utf-8') + ".json"
+            print openName
+            with open(openName, 'r') as load_f:
+                load_dict = json.load(load_f)
+                resultStr = json.dumps(load_dict)
+                print resultStr  # 将dict转成str
+                return resultStr
 
 
-        return resultStr
+def POST(self):
+    print web.input()
+    return "POST hello world"
 
 
-    def POST(self):
-        print web.input()
-        return "POST hello world"
+# Process favicon.ico requests
+class icon:
+    def GET(self):
+        return " hello icon"
+        # raise web.seeother("/static/favicon.ico")
 
 
 def print_dict(k, v):
@@ -48,6 +69,7 @@ def print_dict(k, v):
             print_dict(kk, v[kk])
     else:
         print k, v
+
 
 if __name__ == '__main__':
     app.run()
