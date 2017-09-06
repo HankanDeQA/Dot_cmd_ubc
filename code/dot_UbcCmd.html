@@ -19,6 +19,9 @@
         }
 
 
+
+
+
     </style>
 </head>
 <body>
@@ -37,21 +40,21 @@
         <div class="col-md-12 column">
             <div class="row clearfix">
                 <div class="col-md-6 column">
-                    <form class="form-inline">
+                    <form class="form-inline" METHOD=POST ACTION="" name="form1">
                         <label>打点类型:</label>
-                        <select class="form-control" id="selectid1">
-                            <option>ubc</option>
-                            <option>cmd</option>
+                        <select class="form-control" id="selectid1" onChange="getDot()" name="dotclass">
+                            <option VALUE="0">请选择</option>
+                            <option VALUE="ubc">ubc</option>
+                            <option VALUE="cmd">cmd</option>
                         </select>
                     </form>
                     <br/>
-                    <form class="form-inline">
+                    <form class="form-inline" METHOD=POST name="form2">
                         <label>打&nbsp;&nbsp;点&nbsp;&nbsp;值:</label>
-                        <select class="form-control" id="selectid2">
-                            <option>464</option>
-                            <option>102</option>
-                            <option>109</option>
-                        </select>
+                        <!--<select class="form-control" id="selectid2" name="dotvalue">
+                            <option VALUE="0">请选择</option>
+                        </select>-->
+                        <input type="text" name="dotvalue" id="selectid2" class="form-control" style="height:35px;width:70px"/>
                     </form>
                     <br/>
                     <form class="form-inline">
@@ -67,17 +70,16 @@
                     <span style="font-weight:bold">标准参考：</span>
                     <br/>
                     <textarea rows=20 style="overflow-x:hidden;width:90%;hight:300px">
-						22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
-					 </textarea>
+                        22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+                     </textarea>
                 </div>
                 <div class="col-md-6 column">
                     <span style="font-weight:bold">JSON：</span>
-                    &nbsp&nbsp&nbsp&nbsp
-                    <button id="btnrefresh" onclick="getValue()">刷新</button>
+                    &nbsp&nbsp&nbsp&nbsp<button id="btnrefresh" onclick="getValue()">刷新</button>
                     <br/><br/>
                     <textarea id="revText" name="revText" rows=24 style="overflow-x:hidden;width:90%;hight:300px">
-                    	
-					 </textarea>
+                        
+                     </textarea>
 
                 </div>
             </div>
@@ -86,36 +88,71 @@
 </div>
 <script type="text/javascript">
 
-    function getValue() {
+    // var jsonText = "dadadsadasd244422";
+    // document.getElementById('revText').value = jsonText;  //设置textarea的值
+    // 异步加载select的值
+    //var dotvalue=[    
+    //        ["464","465"],  
+    //        ["102","109","184"] 
+    //    ];    
+    //function getDot(){    
+            //获得打点类型下拉框的对象    
+    //        var sltDotclass=document.form1.dotclass;  
+            //获得打点值下拉框的对象    
+    //        var sltDotValue=document.form2.dotvalue;    
+            //得到对应的打点数组    
+    //        var resultValue=dotvalue[sltDotclass.selectedIndex - 1];    
+            //清空下拉框，仅留提示选项    
+    //        sltDotValue.length=1;    
+            //将打点值数组中的值填充到打点值下拉框中    
+    //        for(var i=0;i<resultValue.length;i++){    
+    //            sltDotValue[i+1]=new Option(resultValue[i],resultValue[i]);    
+    //            }    
+    //    }
+
+    function getValue(){
         var str1 = $("#selectid1 option:selected").val();   //获得选中的值
-        var str2 = $("#selectid2 option:selected").val();
+        //var str2 = $("#selectid2 option:selected").val(); 
+        var str2 = document.getElementById("selectid2").value; 
         var str = "type=" + str1 + "&id=" + str2;
         $.ajax({
-            type: "get",
+            type:"get",
             // dataType:"jsonp",
             // jsonp:"callback",
             // jsonpCallback:"success_jsonpCallback",
             // crossDomain:true,
-
-            url: "http://0.0.0.0:5050/?" + str,
-
-            success: function (json) {
-//                alert(json);
-                var result = JSON.stringify(JSON.parse(json), null, 4);
+            
+            url:"http://0.0.0.0:5050/?"+str,
+            
+            success:function(json){
+                alert(json);
+                var result = JSON.stringify(JSON.parse(json),null,4); 
                 //var jsonresult = objStr.replace(/\n/g, '<br>').replace(/\s/g, '&nbsp');
                 //revText.value=result;
                 $('#revText').val(result);
-
+                
             },
-            error: function () {
+            error:function(){
                 alert("请求出错！");
             }
         });
     }
 
+    function changeTextArea(){
+        document.getElementById('revText').value = 'dasdas';  //设置textarea的值  
+
+        document.getElementByIdx_x("revText").innerText=document.getElementByIdx_x("revText").innerText+"\ninnerText is ok!";
+        document.getElementByIdx_x("revText").innerHTML=document.getElementByIdx_x("revText").innerText+"\ninnerHTML is ok!";
+        document.getElementByIdx_x("revText").value=document.getElementByIdx_x("revText").innerText+"\nvalue is ok!";
+}
+
+
+
+
+
 </script>
 <footer style="padding:20px;text-align:center;color:#999;position:relative;">
-    联系邮箱：zhangjie43@baidu.com
+联系邮箱：zhangjie43@baidu.com
 </footer>
 </body>
 </html>
