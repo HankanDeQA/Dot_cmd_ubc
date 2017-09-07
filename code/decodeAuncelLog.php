@@ -46,12 +46,46 @@ for ($i = 0; $i < $count_json; $i++)
     $obj_item_str = json_encode($obj_item);
     echo $obj_item_str;
 
-//    // 从文件中读取数据到PHP变量
-//    $json_orgin_string = file_get_contents('json/ubc_' . $id . '.json');
-//    // 把JSON字符串转成PHP数组
-//    $data = json_decode($json_string, true);
+    // 存入解析的数据
+    jsonWriteFile('json/ubc_' . $id . '.json', $obj_item_str);
 
-    file_put_contents('json/ubc_' . $id . '.json', $obj_item_str, FILE_APPEND);
+//    file_put_contents('json/ubc_' . $id . '.json', $obj_item_str, FILE_APPEND);
+
+
+}
+
+/*
+ * @param  $fileName 文件目录
+ * @param  $strToWrite要写入的json字符串数据
+ * @return true false
+ * */
+function jsonWriteFile($fileName, $strToWrite)
+{
+    if (is_file($fileName)) {
+        print "文件存在！\n";
+        // 从文件中读取数据，为字符串类型
+        $json_orgin_string = file_get_contents($fileName);
+
+        if (empty($json_orgin_string)) {
+            print "string 为空！\n";
+            return false;
+        } else {
+            print "string 不为空！！\n";
+
+            $json_del = substr($json_orgin_string, 0, -1);
+            $json_last = $json_del . "," . $strToWrite . "]";
+            print $json_last;
+
+            file_put_contents($fileName, $json_last); // 最终数据写入
+            print "\n数据写入成功！\n";
+            return true;
+        }
+    } else { // 文件不存在，则创建文件，并将json字符串写入
+        print "文件不存在！\n";
+        $json = "[" . $strToWrite . "]";
+        file_put_contents($fileName, $json);
+        return true;
+    }
 }
 
 
