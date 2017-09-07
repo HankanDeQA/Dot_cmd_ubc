@@ -75,7 +75,7 @@
                 </div>
                 <div class="col-md-6 column">
                     <span style="font-weight:bold">JSON：</span>
-                    &nbsp&nbsp&nbsp&nbsp<button id="btnrefresh" onclick="getValue()">刷新</button>
+                    &nbsp&nbsp&nbsp&nbsp<button id="btnrefresh" onclick="getValue()">查看</button>
                     <br/><br/>
                     <textarea id="revText" name="revText" rows=24 style="overflow-x:hidden;width:90%;hight:300px">
                         
@@ -133,7 +133,9 @@
                 
             },
             error:function(){
-                alert("请求出错！");
+                var result = "未查到此id";
+                $('#revText').val(result);
+                //alert("请求出错！");
             }
         });
     }
