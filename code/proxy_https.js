@@ -37,64 +37,64 @@ module.exports = {
     replaceRequestData: function (req, data) {
         var url = req.url;
 
-        // 一、拦截cmd请求
-        if (url.indexOf(CMDPath) > -1) {
-            // req.headers['Content-Type'] = 'application/json;charset=utf-8';
-            // var postBody = data.toString('utf-8');
-            initWebpyServer(); // 开启webPy服务器
-
-            console.log('data====', data);
-            console.log('typeof====', typeof(data));
-
-            var buf = new Buffer(data);
-
-            var postBody = buf.toString('utf-8');
-
-
-            console.log("frankieTest " + postBody);
-
-            // php脚本执行，存入本地json文件
-            var cmd_php = "php " + path + "decodeCMDLog.php ";
-            cmd_php += postBody;
-            exec(cmd_php);
-
-//            // python web.py服务器开启
-//            var cmd_py = "python " + path + "serverHttp.py " + "5050";
-//            exec(cmd_py);
-
-            // SubmitArticle(postBody); // 请求
-
-            // js传输数据至php
-            // $.ajax({
-            //     type: "post",
-            //     // dataType: "json",
-            //     url: "decodeCMDLog.php",
-            //     data: postBody,
-            //     // data: {'cmdPostBody': postBody},
-            //     success: function (msg) {
-            //         if (msg) {
-            //             alert(msg);
-            //         }
-            //     }
-            // });
-
-
-            // var postBody = data;
-
-            // var fso, tf; // 仅支持IE
-            // fso = new ActiveXObject("Scripting.FileSystemObject");
-            // // 创建新文件
-            // tf = fso.CreateTextFile("/Users/pengfei06/Downloads/ubc_script/cmdLog/text.txt", true);
-            // // 填写数据，并增加换行符
-            // tf.WriteLine("Testing 1, 2, 3.");
-            // // 增加3个空行
-            // tf.WriteBlankLines(3);
-            // // 填写一行，不带换行符
-            // tf.Write("This is a test.");
-            // // 关闭文件
-            // tf.Close();
-
-        }
+//         // 一、拦截cmd请求
+//         if (url.indexOf(CMDPath) > -1) {
+//             // req.headers['Content-Type'] = 'application/json;charset=utf-8';
+//             // var postBody = data.toString('utf-8');
+//             initWebpyServer(); // 开启webPy服务器
+//
+//             console.log('data====', data);
+//             console.log('typeof====', typeof(data));
+//
+//             var buf = new Buffer(data);
+//
+//             var postBody = buf.toString('utf-8');
+//
+//
+//             console.log("frankieTest " + postBody);
+//
+//             // php脚本执行，存入本地json文件
+//             var cmd_php = "php " + path + "decodeCMDLog.php ";
+//             cmd_php += postBody;
+//             exec(cmd_php);
+//
+// //            // python web.py服务器开启
+// //            var cmd_py = "python " + path + "serverHttp.py " + "5050";
+// //            exec(cmd_py);
+//
+//             // SubmitArticle(postBody); // 请求
+//
+//             // js传输数据至php
+//             // $.ajax({
+//             //     type: "post",
+//             //     // dataType: "json",
+//             //     url: "decodeCMDLog.php",
+//             //     data: postBody,
+//             //     // data: {'cmdPostBody': postBody},
+//             //     success: function (msg) {
+//             //         if (msg) {
+//             //             alert(msg);
+//             //         }
+//             //     }
+//             // });
+//
+//
+//             // var postBody = data;
+//
+//             // var fso, tf; // 仅支持IE
+//             // fso = new ActiveXObject("Scripting.FileSystemObject");
+//             // // 创建新文件
+//             // tf = fso.CreateTextFile("/Users/pengfei06/Downloads/ubc_script/cmdLog/text.txt", true);
+//             // // 填写数据，并增加换行符
+//             // tf.WriteLine("Testing 1, 2, 3.");
+//             // // 增加3个空行
+//             // tf.WriteBlankLines(3);
+//             // // 填写一行，不带换行符
+//             // tf.Write("This is a test.");
+//             // // 关闭文件
+//             // tf.Close();
+//
+//         }
 
         // 二、拦截UBC请求
         if (url.indexOf(UBCPath) > -1) {
@@ -143,9 +143,12 @@ module.exports = {
 
 // cmd命令开启web.py服务器
 function initWebpyServer() {
-    if(isInitServer)
-    return;
+    if (isInitServer) {
+        console.log("frankieTest 已经开启过webPy服务器");
+        return;
+    }
 
+    console.log("frankieTest 准备开启webPy服务器");
     // python web.py服务器开启
     var cmd_py = "python " + path + "serverHttp.py " + "5050";
     exec(cmd_py);
@@ -174,35 +177,6 @@ function CreateXMLHttpRequest() {
     {
         xmlobj = new XMLHttpRequest();
     }
-}
-
-// 请求函数
-function SubmitArticle(postBody)
-{
-    CreateXMLHttpRequest(); //创建对象
-    //var parm = "act=firstweather" ;//构造URL参数
-    //antique = escape(antique);
-    // var parm = "act=" + act + "&cityname=" + cityname + "&antique=" + antique;//构造URL参数
-    console.log(postBody);
-    var postbody = postBody;
-    //xmlobj.open("POST", "{dede:global.cfg_templeturl/}/../include/weather.php", true); //调用weather.php
-    // xmlobj.open("POST", "/weather/include/weather.php", true); //调用weather.php
-    xmlobj.open("POST", "decodeCMDLog.php", true); // 调用decodeCMDLog.php
-    // xmlobj.setRequestHeader("cache-control", "no-cache");
-    // xmlobj.setRequestHeader("contentType", "text/html;charset=uft-8") //指定发送的编码
-    // xmlobj.setRequestHeader("Content-Type", "application/x-www-form-urlencoded;");  //设置请求头信息
-    // xmlobj.onreadystatechange = StatHandler;  //判断URL调用的状态值并处理
-    xmlobj.send(postbody); //设置为发送给服务器数据
-}
-
-// 将数据存入本地——frankie
-function SaveInfoToFile(folder, fileName, fileInfo) {
-    var filePath = folder + fileName;
-    // var fileInfo = "hahahaha";
-    var fso = new ActiveXObject("Scripting.FileSystemObject");
-    var file = fso.CreateTextFile(filePath, true);
-    file.Write(fileInfo);
-    file.Close();
 }
 
 function getNowFormatDate() {
