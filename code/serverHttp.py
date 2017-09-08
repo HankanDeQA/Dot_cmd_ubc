@@ -4,7 +4,9 @@
 
 import web
 import json
+
 import urllib
+import urllib2
 
 urls = (
     '/', 'hello',
@@ -29,9 +31,11 @@ class hello:
 
         revType = revInput['type']
         revId = revInput['id']
-        print revType
+        revPlatform = revInput['platform']
+        revModule = revInput['module']
         print type(revId)
-        print revId
+        print revModule
+        print type(revModule)
 
         if not revType:
             print "type is null"
@@ -40,14 +44,24 @@ class hello:
             print "id is null"
             return "id is null"
         else:
-            # 将要打开的文件名
-            openName = "json/" + revType.encode('utf-8') + "_" + revId.encode('utf-8') + ".json"
-            print openName
-            with open(openName, 'r') as load_f:
-                load_dict = json.load(load_f)
-                resultStr = json.dumps(load_dict)
-                print resultStr  # 将dict转成str
+            if revModule == '1':  # 传来的module字段是1，代表请求的是模板数据
+                # print type(get_dot_module(revId, revPlatform))
+                print "返回模板数据~~~~~~~~~~~~~~~"
+                resultStr = get_dot_module(revId, revPlatform)
+                print type(resultStr)
+                print resultStr
                 return resultStr
+            else:
+                # 将要打开的文件名
+                openName = "json/" + revType.encode('utf-8') + "_" + revId.encode('utf-8') + ".json"
+                print openName
+                with open(openName, 'r') as load_f:
+                    load_dict = json.load(load_f)
+                    resultStr = json.dumps(load_dict)
+                    print "返回实时数据~~~~~~~~~~~~~~~"
+                    print resultStr  # 将dict转成str
+                    print type(resultStr)
+                    return resultStr
 
 
 def POST(self):
@@ -62,6 +76,31 @@ class icon:
         # raise web.seeother("/static/favicon.ico")
 
 
+# 获取打点标准数据，并且返回指定id、平台的模板json字符串
+def get_dot_module(id, platform):
+    url = "http://ucenter.mbd.baidu.com/ucenter?model=ubc&action=outside&starttime=1479007145&prod=searchbox"
+    req = urllib2.Request(url)
+    # print req
+    res_data = urllib2.urlopen(req)
+    res = res_data.read()
+    # print res
+    # print type(res)
+
+    resJson = json.loads(res)
+    # print type(resJson)
+
+    list = resJson["data"]
+
+    for index in range(len(list)):
+        item_id = list[index]["item_id"]
+        item_platform = list[index]["platform"]
+
+        if item_id.encode() == id:
+            if (item_platform.encode() == '') or (item_platform.encode() == platform):  # 没有playform字段，默认会返回
+                # print type(json.dumps(list[index]))
+                return json.dumps(list[index])
+
+
 def print_dict(k, v):
     if isinstance(v, dict):
         print k, v
@@ -73,37 +112,3 @@ def print_dict(k, v):
 
 if __name__ == '__main__':
     app.run()
-
-    # from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-    # import io, shutil
-    # import urllib
-    # import os, sys
-
-
-    # class MyRequestHandler(BaseHTTPRequestHandler):
-    #     def do_GET(self):
-    #         mpath, margs = urllib.splitquery(self.path)  # ?分割
-    #         print self.path
-    #         self.do_action(mpath, margs)
-
-    #     def do_POST(self):
-    #         mpath, margs = urllib.splitquery(self.path)
-    #         datas = self.rfile.read(int(self.headers['content-length']))
-    #         print datas
-    #         self.do_action(mpath, datas)
-
-    #     def do_action(self, path, args):
-    #         self.outputtxt(path + args)
-
-    #     def outputtxt(self, content):
-    #         # 指定返回编码
-    #         enc = "UTF-8"
-    #         content = content.encode(enc)
-    #         f = io.BytesIO()
-    #         f.write(content)
-    #         f.seek(0)
-    #         self.send_response(200)
-    #         self.send_header("Content-type", "text/html; charset=%s" % enc)
-    #         self.send_header("Content-Length", str(len(content)))
-    #         self.end_headers()
-    #         shutil.copyfileobj(f, self.wfile)
