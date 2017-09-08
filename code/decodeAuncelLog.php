@@ -51,7 +51,6 @@ for ($i = 0; $i < $count_json; $i++)
 
 //    file_put_contents('json/ubc_' . $id . '.json', $obj_item_str, FILE_APPEND);
 
-
 }
 
 /*

@@ -61,23 +61,27 @@
                             <option>android</option>
                             <option>ios</option>
                         </select>
-                        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-                        <button id="btnselect" onclick="getValue('1')">确定</button>
                     </form>
-                    <br/>
-                    <span style="font-weight:bold">标准参考：</span>
-                    <br/>
 
-                    <textarea id="revModule" name="revModule" rows=20 style="overflow-x:hidden;width:90%;hight:300px">
-
+                    <div class="form-inline">
+                        <br/>
+                        <span style="font-weight:bold">标准参考：</span>
+                        &nbsp&nbsp&nbsp&nbsp
+                        <button id="btnselect" onclick="getValue('1')">确定</button>
+                        <br/>
+                        <textarea id="revModule" name="revModule" rows=22
+                                  style="overflow-x:hidden;width:90%;hight:300px">
                      </textarea>
+                    </div>
+
                 </div>
+
                 <div class="col-md-6 column">
                     <span style="font-weight:bold">JSON：</span>
                     &nbsp&nbsp&nbsp&nbsp
                     <button id="btnrefresh" onclick="getValue('0')">查看</button>
                     <br/><br/>
-                    <textarea id="revText" name="revText" rows=24 style="overflow-x:hidden;width:90%;hight:300px">
+                    <textarea id="revText" name="revText" rows=29 style="overflow-x:hidden;width:90%;hight:300px">
                         
                      </textarea>
 
@@ -111,31 +115,82 @@
     //    }
 
     function getValue(module) {
-        var str1 = $("#selectid1 option:selected").val();   //获得选中的值
+        var str1 = $("#selectid1 option:selected").val();   // 获得选中的值
         //var str2 = $("#selectid2 option:selected").val(); 
         var str2 = document.getElementById("selectid2").value;
-        var str3 = $("#selectid3 option:selected").val();   //获得选中的平台值
-        var str = "type=" + str1 + "&id=" + str2 + "&platform=" + str3 + "&module=" + module;
+        var str3 = $("#selectid3 option:selected").val();   // 获得选中的平台值
+        var reqUrl = "http://0.0.0.0:5050/?"
+            + "type=" + str1 + "&id=" + str2 + "&platform=" + str3 + "&module=" + module;
+
+        if (module === '1') {
+            networkRequest(reqUrl, "get", true, module);
+        } else {
+            networkRequest(reqUrl, "get", true, module);
+        }
+    }
+
+    /*
+    *  ajax网络请求方法
+    * @param {string} url 请求url
+    * @param {string} method 请求方法：post、get
+    * @param {boolean} async 是否异步请求
+    * @param {string} module 模板/实时数据请求
+    * @return {string} result 请求结果
+    * */
+    function networkRequest(url, method, async, module) {
+        console.log('url:' + url + ', method:' + method);
+        var result = "";
         $.ajax({
-            type: "get",
-            // dataType:"jsonp",
-            // jsonp:"callback",
-            // jsonpCallback:"success_jsonpCallback",
-            // crossDomain:true,
+                type: method,
+                // dataType:"jsonp",
+                // jsonp:"callback",
+                // jsonpCallback:"success_jsonpCallback",
+                // crossDomain:true,
+                url: url,
+//                timeout: 3000, // 超时时间设置，单位毫秒
+                async: async,
 
-            url: "http://0.0.0.0:5050/?" + str,
+                success: function (json) { // 注意异步和同步的区别！！！
+                    result = json;
+                    console.log('result:' + result + ', typeof:' + typeof result);
 
-            success: function (json) {
-                alert(json);
-                var result = JSON.stringify(JSON.parse(json), null, 4);
+                    if (isJSON(result)) { // 判断是否为json格式，并解析
+                        result = JSON.stringify(JSON.parse(result), null, 4);
+                    }
 
-                $('#revText').val(result);
+                    if (module === '1') {
+                        $('#revModule').val(result);
+                    } else {
+                        $('#revText').val(result);
+                    }
+                },
 
-            },
-            error: function () {
-                alert("请求出错!")
+                complete: function (XMLHttpRequest, status) { // 请求完成后最终执行参数
+                    if (status === 'timeout') { // 超时,status还有success,error等值的情况
+                        ajaxTimeoutTest.abort();
+                        alert("请求超时！");
+                    }
+                    if (status === 'error') {
+                        alert("请求出错！");
+                    }
+                }
             }
-        });
+        );
+    }
+
+    // 判断数据格式，是否为字符串，是否为json格式
+    function isJSON(str) {
+        if (typeof str === 'string') {
+            try {
+                JSON.parse(str);
+                return true;
+            } catch (e) {
+                console.log(e);
+                return false;
+            }
+        }
+        console.log('It is not a string!')
+        return false;
     }
 
     function changeTextArea() {
