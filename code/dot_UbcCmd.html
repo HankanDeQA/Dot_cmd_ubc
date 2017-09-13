@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="utf-8">
     <title>UBC&CMD打点测试工具</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
     <!--  Bootstrap 核心 CSS 文件 -->
     <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <!-- 可选的Bootstrap主题文件（一般不使用） -->
@@ -11,18 +12,17 @@
     <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
     <!--  Bootstrap 核心 JavaScript 文件 -->
     <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="./jsonlint.js"></script>
+    <script src="./jquery.json.js"></script>
+    <link href="./css/font-awesome.min.css" rel="stylesheet">
     <style>
         body {
             min-height: 300px;
             padding-top: 20px;
             background: #f6f6f6;
         }
-
-
-
-
-
     </style>
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0">
 </head>
 <body>
 <div class="container">
@@ -40,46 +40,74 @@
         <div class="col-md-12 column">
             <div class="row clearfix">
                 <div class="col-md-6 column">
-                    <form class="form-inline" METHOD=POST ACTION="" name="form1">
-                        <label>打点类型:</label>
-                        <select class="form-control" id="selectid1" onChange="getDot()" name="dotclass">
-                            <option VALUE="0">请选择</option>
-                            <option VALUE="ubc">ubc</option>
-                            <option VALUE="cmd">cmd</option>
+                    <form class="form-inline" method="post" action="" name="form1">
+                        <label>
+                            打点类型:
+                        </label>
+                        <select class="form-control" id="selectid1" name="dotclass">
+                            <option value="0">
+                                请选择
+                            </option>
+                            <option value="ubc">
+                                ubc
+                            </option>
+                            <option value="cmd">
+                                cmd
+                            </option>
                         </select>
                     </form>
-                    <br/>
-                    <form class="form-inline" METHOD=POST name="form2">
-                        <label>打&nbsp;&nbsp;点&nbsp;&nbsp;值:</label>
+                    <br>
+                    <form class="form-inline" method="post" name="form2">
+                        <label>
+                            打&nbsp;&nbsp;点&nbsp;&nbsp;值:
+                        </label>
                         <!--<select class="form-control" id="selectid2" name="dotvalue">
-                            <option VALUE="0">请选择</option>
-                        </select>-->
-                        <input type="text" name="dotvalue" id="selectid2" class="form-control" style="height:35px;width:70px"/>
+                        <option VALUE="0">请选择</option>
+                    </select>-->
+                        <label><input type="text" name="dotvalue" id="selectid2" class="form-control"
+                                      style="height:35px;width:70px"></label>
                     </form>
-                    <br/>
+                    <br>
                     <form class="form-inline">
-                        <label>客&nbsp;&nbsp;户&nbsp;&nbsp;端:</label>
+                        <label>
+                            客&nbsp;&nbsp;户&nbsp;&nbsp;端:
+                        </label>
                         <select class="form-control" id="selectid3">
-                            <option>Android</option>
-                            <option>IOS</option>
+                            <option>
+                                android
+                            </option>
+                            <option>
+                                ios
+                            </option>
                         </select>
-                        &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-                        <button id="btnselect" onclick="">确定</button>
                     </form>
-                    <br/>
-                    <span style="font-weight:bold">标准参考：</span>
-                    <br/>
-                    <textarea rows=20 style="overflow-x:hidden;width:90%;hight:300px">
-                        22222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
-                     </textarea>
+                    <div class="form-inline">
+                        <br>
+                        <span style="font-weight:bold">标准参考：</span>
+                        &nbsp&nbsp&nbsp&nbsp
+                        <button id="btnselect" type="button" onclick="getValue('1')">
+                            确定
+                        </button>
+                        <br/><br/>
+                        <div id="revModule" name="revModule"
+                             style="background-color:#fff;height:450px;padding:0px 25px;white-space: pre-line;font-size:12px;line-height:25px;overflow:auto;border:1px solid #bbe1f1;">
+                            打点标准参考在这里...
+                        </div>
+                    </div>
+
                 </div>
+
                 <div class="col-md-6 column">
                     <span style="font-weight:bold">JSON：</span>
-                    &nbsp&nbsp&nbsp&nbsp<button id="btnrefresh" onclick="getValue()">查看</button>
+                    &nbsp&nbsp&nbsp&nbsp
+                    <button id="btnrefresh" onclick="getValue('0')">查看</button>
+                    &nbsp&nbsp&nbsp&nbsp
+                    <button id="btnclear" onclick="clearDot()" title="清除所有历史打点数据">清除</button>
                     <br/><br/>
-                    <textarea id="revText" name="revText" rows=24 style="overflow-x:hidden;width:90%;hight:300px">
-                        
-                     </textarea>
+                    <div id="revText" name="revText"
+                         style="background-color:#fff;height:612px;padding:0px 25px;white-space: pre-line;font-size:12px;line-height:25px;overflow:auto;border:1px solid #bbe1f1;">
+                        打点json格式化输出...
+                    </div>
 
                 </div>
             </div>
@@ -91,70 +119,188 @@
     // var jsonText = "dadadsadasd244422";
     // document.getElementById('revText').value = jsonText;  //设置textarea的值
     // 异步加载select的值
-    //var dotvalue=[    
-    //        ["464","465"],  
-    //        ["102","109","184"] 
-    //    ];    
-    //function getDot(){    
-            //获得打点类型下拉框的对象    
-    //        var sltDotclass=document.form1.dotclass;  
-            //获得打点值下拉框的对象    
-    //        var sltDotValue=document.form2.dotvalue;    
-            //得到对应的打点数组    
-    //        var resultValue=dotvalue[sltDotclass.selectedIndex - 1];    
-            //清空下拉框，仅留提示选项    
-    //        sltDotValue.length=1;    
-            //将打点值数组中的值填充到打点值下拉框中    
-    //        for(var i=0;i<resultValue.length;i++){    
-    //            sltDotValue[i+1]=new Option(resultValue[i],resultValue[i]);    
-    //            }    
-    //    }
+    // var dotvalue=[
+    // ["464","465"],
+    // ["102","109","184"]
+    // ];
+    // function getDot(){
+    // 获得打点类型下拉框的对象
+    // var sltDotclass=document.form1.dotclass;
+    // 获得打点值下拉框的对象
+    // var sltDotValue=document.form2.dotvalue;
+    // 得到对应的打点数组
+    // var resultValue=dotvalue[sltDotclass.selectedIndex - 1];
+    // 清空下拉框，仅留提示选项
+    // sltDotValue.length=1;
+    // 将打点值数组中的值填充到打点值下拉框中
+    // for(var i=0;i<resultValue.length;i++){
+    // sltDotValue[i+1]=new Option(resultValue[i],resultValue[i]);
+    // }
+    // }
 
-    function getValue(){
-        var str1 = $("#selectid1 option:selected").val();   //获得选中的值
-        //var str2 = $("#selectid2 option:selected").val(); 
-        var str2 = document.getElementById("selectid2").value; 
-        var str = "type=" + str1 + "&id=" + str2;
-        $.ajax({
-            type:"get",
-            // dataType:"jsonp",
-            // jsonp:"callback",
-            // jsonpCallback:"success_jsonpCallback",
-            // crossDomain:true,
-            
-            url:"http://0.0.0.0:5050/?"+str,
-            
-            success:function(json){
-//                alert(json);
-                var result = JSON.stringify(JSON.parse(json),null,4); 
-                //var jsonresult = objStr.replace(/\n/g, '<br>').replace(/\s/g, '&nbsp');
-                //revText.value=result;
-                $('#revText').val(result);
-                
-            },
-            error:function(){
-                var result = "未查到此id";
-                $('#revText').val(result);
-                //alert("请求出错！");
-            }
-        });
+    function getValue(module) {
+        var str1 = $('#selectid1 option:selected').val(); // 获得选中的值
+        // var str2 = $("#selectid2 option:selected").val();
+        var str2 = document.getElementById('selectid2').value;
+        var str3 = $('#selectid3 option:selected').val(); // 获得选中的平台值
+        var reqUrl = 'http://0.0.0.0:5050/?'
+            + 'type=' + str1 + '&id=' + str2 + '&platform=' + str3 + '&module=' + module;
+
+        // 网络请求
+        networkRequest(reqUrl, 'get', true);
     }
 
-    function changeTextArea(){
-        document.getElementById('revText').value = 'dasdas';  //设置textarea的值  
+    /*
+        *  ajax网络请求方法
+        * @param {string} url 请求url
+        * @param {string} method 请求方法：post、get
+        * @param {boolean} async 是否异步请求
+        * @return {string} result 请求结果
+        * */
+    function networkRequest(url, method, async) {
+        console.log('url:' + url + ', method:' + method);
 
-        document.getElementByIdx_x("revText").innerText=document.getElementByIdx_x("revText").innerText+"\ninnerText is ok!";
-        document.getElementByIdx_x("revText").innerHTML=document.getElementByIdx_x("revText").innerText+"\ninnerHTML is ok!";
-        document.getElementByIdx_x("revText").value=document.getElementByIdx_x("revText").innerText+"\nvalue is ok!";
-}
+        var urlJson = parseQueryString(url);
+        var module = urlJson['module']; // 请求的module字段
+        var del = urlJson['delete']; // 请求的delete字段
 
+        var result = ''; // 服务器返回结果
+        $.ajax({
+                type: method,
+                // dataType:"jsonp",
+                // jsonp:"callback",
+                // jsonpCallback:"success_jsonpCallback",
+                // crossDomain:true,
+                url: url,
+                // timeout: 3000, // 超时时间设置，单位毫秒
+                async: async,
 
+                success: function (json) { // 注意异步和同步的区别！！！
+                    result = json;
+                    console.log('result:' + result + ', typeof:' + typeof result);
 
+                    if (isJSON(result)) { // 判断是否为json格式，并解析
+                        result = format(JSON.stringify(JSON.parse(result), null, 4));
+                    }
 
+                    if (module === '1') {
+                        $('#revModule').html(result);
+                    } else {
+                        $('#revText').html(result);
+                    }
+                },
+                error: function () {
+                    var result = "很抱歉，未从查到此id...";
+                    $('#revText').html(result);
+                },
+
+                complete: function (XMLHttpRequest, status) { // 请求完成后最终执行参数
+                    if (status === 'timeout') { // 超时,status还有success,error等值的情况
+                        // ajaxTimeoutTest.abort();
+                        alert('请求超时！');
+                    }
+
+                    if (status === 'error') {
+                        alert('请求出错！');
+                    }
+
+                }
+            }
+        );
+    }
+
+    // 判断数据格式，是否为字符串，是否为json格式
+    function isJSON(str) {
+        if (typeof str === 'string') {
+            try {
+                JSON.parse(str);
+                return true;
+            }
+            catch (e) {
+                console.log(e);
+                return false;
+            }
+        }
+
+        console.log('It is not a string!');
+        return false;
+    }
+
+    function parseQueryString(url) {
+        var str = url.split("?")[1];
+        var iterms = str.split("&");
+        var arr, Json = {};
+        for (var i = 0; i < iterms.length; i++) {
+            arr = iterms[i].split("=");
+            Json[arr[0]] = arr[1];
+        }
+        return Json;
+    }
+
+    /*function changeTextArea() {
+        document.getElementById('revText').value = 'dasdas'; // 设置textarea的值
+        document.getElementByIdx_x('revText').innerText = document.getElementByIdx_x('revText').innerText + '\ninnerText is ok!';
+        document.getElementByIdx_x('revText').innerHTML = document.getElementByIdx_x('revText').innerText + '\ninnerHTML is ok!';
+        document.getElementByIdx_x('revText').value = document.getElementByIdx_x('revText').innerText + '\nvalue is ok!';
+    }*/
+
+    function format(jsondata) {
+        init();
+        var content = $.trim(jsondata);
+        var result = '';
+        if (content != '') {
+            //如果是xml,那么转换为json
+            if (content.substr(0, 1) === '<'
+                && content.substr(-1, 1) === '>') {
+                try {
+                    var json_obj = $.xml2json(content);
+                    content = JSON.stringify(json_obj);
+                } catch (e) {
+                    result = '解析错误：<span style="color: #f1592a;font-weight:bold;">'
+                        + e.message + '</span>';
+                    current_json_str = result;
+                    //$('#result').html(result);
+                    return result;
+                }
+
+            }
+            try {
+                current_json = jsonlint.parse(content);
+                current_json_str = JSON.stringify(current_json);
+                //current_json = JSON.parse(content);
+                result = new JSONFormat(content, 4).toString();
+            } catch (e) {
+                result = '<span style="color: #f1592a;font-weight:bold;">'
+                    + e + '</span>';
+                current_json_str = result;
+            }
+
+            //$('#result').html(result);
+            return result;
+        } else {
+            $('#result').html('');
+            return '';
+        }
+    }
+
+    function init() {
+        xml_flag = false;
+        zip_flag = false;
+        $('.xml').attr('style', 'color:#999;');
+        $('.zip').attr('style', 'color:#999;');
+    }
+
+    function clearDot() {
+        // 清空显示框
+        document.getElementById('revText').innerHTML = '';
+        var deleteUrl = 'http://0.0.0.0:5050/?delete=1';
+        // 网络请求
+        networkRequest(deleteUrl, 'get', true);
+    }
 
 </script>
 <footer style="padding:20px;text-align:center;color:#999;position:relative;">
-联系邮箱：zhangjie43@baidu.com
+    联系邮箱：zhangjie43@baidu.com
 </footer>
 </body>
 </html>
